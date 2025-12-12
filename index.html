@@ -1,0 +1,1894 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>A Sweet Birthday Surprise</title>
+
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=VT323&display=swap"
+            rel="stylesheet"
+        />
+
+        <style>
+            /* --- MODERN DARK THEME PALETTE (Matching Image Design) --- */
+            :root {
+                /* Colors derived from the image */
+                --desktop-bg: #383a42; /* Main content area background (slightly lighter dark grey) */
+                --sidebar-bg: #2f3138; /* Deeper dark grey */
+                --surface0: #464850; /* Card/Applet background */
+                --surface1: #5a5c63; /* Slightly lighter surfaces, hover states */
+
+                /* Text */
+                --text: #dcdcdc; /* Light text */
+                --subtext0: #a0a0a0; /* Subdued light text */
+
+                /* Accent Colors */
+                --primary: #f5bdc0; /* Soft Pink/Salmon - Main interaction color */
+                --secondary: #a0c5a0; /* Muted Green - Secondary interaction */
+                --tertiary: #7099f0; /* Blue - Title Bar/Utility */
+                --bday-gold: #ffd700; /* New Gold for effects */
+
+                /* Layout & Dimensions */
+                --dashboard-width: 280px;
+                --global-radius: 2px; /* Set to small radius for hard-edged look */
+
+                /* Fonts */
+                --font-sans: "Inter", sans-serif;
+                --font-mono: "VT323", monospace;
+
+                /* Retro Style Borders & Shadows */
+                --border-light: #5a5c63; /* Highlight/Top-Left border */
+                --border-dark: #2f3138; /* Shadow/Bottom-Right border */
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            /* --- NEW: CUSTOM CURSOR & BUTTON EFFECTS --- */
+
+            /* 1. Custom Cursor for Interactive Elements (Birthday Theme) */
+            .sweet-taskbar-dock,
+            .applet-desktop,
+            .modal {
+                /* Use a celebratory cursor over the main canvas */
+                cursor:
+                    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 16 16'><text y='14' font-size='14' fill='%23ffd700'>✨</text></svg>")
+                        8 8,
+                    auto;
+            }
+
+            /* Standard cursor for text and non-interactive elements */
+            .window-title-bar,
+            .applet-content,
+            .modal-content {
+                cursor: default;
+            }
+
+            /* Pointer cursor for interactive elements (using a different celebratory icon) */
+            .sweet-item-icon-only,
+            .applet-launcher-btn,
+            .scroll-button,
+            .celebrate-button,
+            .dashboard-button,
+            .window-close-btn,
+            .close-btn {
+                cursor:
+                    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 16 16'><text y='14' font-size='14' fill='%23f5bdc0'>💖</text></svg>")
+                        8 8,
+                    pointer;
+            }
+
+            /* 2. Button Text Shadow Effect (Maintains retro look, adds pop) */
+            .applet-launcher-btn.btn-style,
+            .scroll-button,
+            .celebrate-button,
+            .dashboard-button {
+                text-shadow:
+                    1px 1px 0 var(--border-light),
+                    -1px -1px 0 var(--border-dark); /* Subtle 3D effect */
+            }
+
+            /* 3. Confetti Trail on Main Content Hover (Visual flair) */
+            .main-content-area:hover {
+                /* Confetti is handled via JS (mouse-move listener) for better performance/control */
+            }
+
+            body {
+                font-family: var(--font-sans);
+                color: var(--text);
+                background-color: var(--desktop-bg);
+                line-height: 1.6;
+                font-size: 16px;
+                display: flex;
+                min-height: 100vh;
+
+                background-image: url("https://w.wallhaven.cc/full/6q/wallhaven-6qlk76.jpg");
+                background-repeat: repeat; /* Tiles the image */
+                background-attachment: fixed; /* Keeps the background static as content moves */
+                background-size: auto; /* Uses the image's original size for tiling */
+            }
+
+            /* --- RETRO HARD-EDGE BASE STYLE --- */
+            /* Applies to Applets, Modals, and Cards (Now with 4px Shadow) */
+            .applet,
+            .modal-content,
+            .window-frame,
+            .dashboard-image-slot,
+            .point,
+            .sweet-item-icon-only {
+                border-style: solid;
+                border-width: 1px;
+                border-color: var(--border-light) var(--border-dark)
+                    var(--border-dark) var(--border-light);
+                border-radius: var(--global-radius);
+                box-shadow: 4px 4px 0 0 var(--border-dark); /* BOLD Hard drop shadow for applets and cards */
+                transition: none; /* Disable soft transitions */
+            }
+
+            /* Reset for the main dock/sidebar background */
+            .sweet-taskbar-dock {
+                box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+                border: none; /* Dock doesn't need the 3D frame */
+            }
+
+            /* --- Left Side Taskbar (DOCK) --- */
+
+            .sweet-taskbar-dock {
+                width: var(--dashboard-width);
+                background-color: var(--sidebar-bg);
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                padding: 30px 20px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                gap: 20px;
+                overflow-y: auto;
+            }
+
+            .taskbar-top-section {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .sidebar-title {
+                color: var(--primary);
+                font-size: 2.5em;
+                font-weight: 800;
+                line-height: 1.1;
+            }
+            .sidebar-subtitle {
+                color: var(--subtext0);
+                font-size: 1em;
+                font-weight: 400;
+                margin-bottom: 5px;
+            }
+
+            /* Image Slot now has the retro frame */
+            .dashboard-image-slot {
+                height: 180px;
+                background-color: var(--surface0);
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+            }
+            .dashboard-image-slot img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            .icon-placeholder {
+                color: var(--subtext0);
+                font-style: italic;
+                font-size: 0.9em;
+            }
+
+            /* Utility Items (OUTLETS) - ADD GLOW */
+            .sweet-item-icon-only {
+                background-color: var(--surface0);
+                padding: 15px;
+                text-align: center;
+                /* Inherits retro frame from base style */
+                transition:
+                    box-shadow 0.2s,
+                    transform 0.1s; /* Added transition */
+            }
+            /* Active/Hover state - reverses the shadows to look 'pressed' AND adds GLOW */
+            .sweet-item-icon-only:hover {
+                background-color: var(--surface1);
+                transform: none; /* No vertical lift */
+                box-shadow:
+                    4px 4px 0 0 var(--border-dark),
+                    0 0 10px var(--bday-gold); /* Gold GLOW */
+            }
+            .sweet-item-icon-only:active {
+                border-color: var(--border-dark) var(--border-light)
+                    var(--border-light) var(--border-dark);
+                box-shadow:
+                    inset 4px 4px 0 0 var(--border-dark),
+                    0 0 5px var(--bday-gold); /* Inner Gold GLOW */
+                transform: translate(
+                    4px,
+                    4px
+                ); /* Shift content down/right by 4px to simulate press */
+            }
+            .sweet-item-icon-only .icon {
+                font-size: 2.5em;
+                margin: 0;
+                color: var(--primary);
+            }
+
+            /* Applet Launch Bar (DOCK BUTTONS) */
+            .applet-launch-bar.dock-style {
+                margin-top: auto;
+                padding: 15px 0; /* Increased padding */
+                border-top: none; /* Removed line separator */
+                display: flex;
+                flex-direction: column; /* Changed to column for vertical buttons */
+                justify-content: flex-start;
+                gap: 15px; /* Increased gap */
+                align-items: center; /* Center buttons horizontally */
+            }
+
+            /* Dock Button Base Style (Applies 3D pop-out effect) - ADD GLOW */
+            .applet-launcher-btn.btn-style {
+                /* Base Button Look */
+                width: 90%; /* Make buttons wide */
+                height: auto;
+                padding: 8px;
+                font-size: 1em;
+                font-weight: 600;
+                text-transform: uppercase;
+                flex-shrink: 0;
+                color: var(--sidebar-bg); /* Dark text for bright buttons */
+                background-color: var(--surface0); /* Neutral fallback */
+                border-radius: var(--global-radius);
+                transition:
+                    box-shadow 0.2s,
+                    transform 0.1s; /* Added transition */
+                /* Pop-out 3D Effect */
+                border-style: solid;
+                border-width: 1px;
+                border-color: var(--border-light) var(--border-dark)
+                    var(--border-dark) var(--border-light);
+                box-shadow: 3px 3px 0 0 var(--border-dark);
+            }
+
+            /* Hover state - adds GLOW */
+            .applet-launcher-btn.btn-style:hover {
+                box-shadow:
+                    3px 3px 0 0 var(--border-dark),
+                    0 0 10px var(--primary); /* Pink GLOW */
+            }
+
+            /* Active state - reverses the shadows to look 'pressed' AND adds inner GLOW */
+            .applet-launcher-btn.btn-style:active,
+            .applet-launcher-btn.applet-active {
+                border-color: var(--border-dark) var(--border-light)
+                    var(--border-light) var(--border-dark);
+                box-shadow:
+                    inset 3px 3px 0 0 var(--border-dark),
+                    0 0 5px var(--primary); /* Inner Pink GLOW */
+                transform: translate(
+                    3px,
+                    3px
+                ); /* Shift content down/right by 3px to simulate press */
+            }
+
+            /* Custom Colors for each button */
+            .btn-message {
+                background-color: var(--primary); /* Pink */
+                color: var(--sidebar-bg);
+            }
+            .btn-cake {
+                background-color: var(--secondary); /* Green */
+                color: var(--sidebar-bg);
+            }
+            .btn-points {
+                background-color: var(--tertiary); /* Blue */
+                color: var(--sidebar-bg);
+            }
+            .btn-gallery {
+                background-color: var(--bday-gold); /* Gold/Yellow */
+                color: var(--sidebar-bg);
+            }
+            .btn-final {
+                background-color: #ff69b4; /* Hot Pink */
+                color: var(--sidebar-bg);
+            }
+
+            /* Remove old icon-based styles if they conflict */
+            .applet-launcher-btn.icon-dock-btn {
+                display: none;
+            }
+            .applet-launcher-btn.icon-dock-btn .icon {
+                display: none;
+            }
+
+            /* --- Right Side Content Area (Desktop) --- */
+            /* ... (Rest of CSS is unchanged for brevity) ... */
+
+            .main-content-area {
+                margin-left: var(--dashboard-width);
+                flex-grow: 1;
+                padding: 50px;
+                min-width: 0;
+                position: relative;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            /* --- Applet Window Styling (Retro Frame) --- */
+            .applet {
+                background-color: var(--surface0);
+                position: absolute;
+                display: flex;
+                flex-direction: column;
+                z-index: 90;
+                /* Inherits retro frame and BOLD 4px shadow from base style */
+            }
+
+            /* Window Title Bar Styling */
+            .window-title-bar {
+                background-color: var(--surface0);
+                color: var(--text);
+                padding: 10px 15px; /* Slightly reduced padding */
+                font-weight: 600;
+                font-size: 1em;
+                border-radius: var(--global-radius) var(--global-radius) 0 0;
+                cursor: move;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid var(--border-dark); /* Dark line separator */
+            }
+
+            .window-close-btn {
+                color: var(--subtext0);
+                font-size: 1.1em;
+                font-weight: normal;
+                padding: 0 5px;
+                line-height: 1;
+                transition: color 0.2s;
+            }
+            .window-close-btn:hover {
+                color: var(--primary);
+            }
+
+            .applet-content {
+                padding: 25px;
+                flex-grow: 1;
+            }
+
+            /* Applet Sizing */
+            .large-applet {
+                width: 650px;
+                max-width: 800px;
+            }
+            .medium-applet {
+                width: 380px;
+            }
+            .photo-viewer-applet {
+                width: 500px;
+                max-width: 600px;
+                height: 500px;
+            }
+            .cake-applet {
+                width: 400px;
+                height: 350px;
+            }
+
+            /* --- Cake Applet Content --- */
+            .cake-display {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                text-align: center;
+                font-family: var(--font-sans);
+                font-size: 1em;
+            }
+            .cake-svg {
+                width: 80%;
+                max-width: 250px;
+                height: auto;
+                margin-bottom: 20px;
+            }
+            .candle-flame {
+                fill: var(--primary);
+                animation: flicker 0.2s infinite alternate;
+            }
+            /* Cake Layers - use theme colors */
+            .cake-layer-color-1 {
+                fill: var(--primary);
+            }
+            .cake-layer-color-2 {
+                fill: var(--secondary);
+            }
+            .cake-icing {
+                fill: var(--text);
+            }
+            @keyframes flicker {
+                0% {
+                    opacity: 1;
+                }
+                100% {
+                    opacity: 0.8;
+                }
+            }
+
+            /* --- Photo Viewer Applet Content --- */
+            .single-photo-viewer {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                height: 100%;
+            }
+            .main-display-photo {
+                width: 100%;
+                height: 90%;
+                object-fit: contain;
+                border: 1px solid var(--surface1);
+                padding: 5px; /* Smaller padding */
+                margin-bottom: 10px;
+                border-radius: 0; /* Sharp corners for photo frame */
+            }
+            .photo-caption {
+                font-size: 0.85em;
+                color: var(--subtext0);
+                font-style: italic;
+                text-align: center;
+            }
+
+            /* General Text and Titles */
+            .hero-section {
+                padding: 0;
+                text-align: left;
+            }
+            .main-title {
+                color: var(--primary);
+                font-size: 2.8em;
+                font-weight: 800;
+            }
+            .subtitle {
+                color: var(--subtext0);
+                margin-top: 5px;
+                font-size: 1.1em;
+            }
+
+            /* Admiration Points - Now hard-edged cards */
+            .admiration-points {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+            }
+
+            .point {
+                background-color: var(--sidebar-bg);
+                padding: 20px;
+                text-align: left;
+                /* Inherits retro frame and BOLD 4px shadow from base style */
+            }
+            .point:hover {
+                transform: none;
+                /* On hover, slightly change the background color */
+                background-color: #35373e;
+            }
+
+            .point h3 {
+                font-size: 1.2em;
+                color: var(--text);
+                margin-bottom: 5px;
+            }
+            .point p {
+                font-size: 0.9em;
+                color: var(--subtext0);
+            }
+            .point .icon {
+                font-size: 1.5em;
+                margin-bottom: 10px;
+                display: block;
+                color: var(--secondary);
+            }
+
+            /* Final Note Styling */
+            .final-applet-content {
+                text-align: center;
+            }
+            .final-message {
+                font-size: 1.2em;
+                font-style: italic;
+                color: var(--primary);
+                margin-bottom: 20px;
+            }
+            .signature {
+                font-size: 1.1em;
+                font-weight: 600;
+                color: var(--secondary);
+                margin-bottom: 20px;
+            }
+
+            /* --- Button Styling (Classic 3D/Embossed Look) - ADD GLOW --- */
+            .scroll-button,
+            .celebrate-button,
+            .dashboard-button {
+                text-decoration: none;
+                background-color: var(--primary);
+                color: var(--sidebar-bg);
+                padding: 12px 25px;
+                font-weight: 600;
+                text-transform: none;
+                font-size: 1em;
+                border-radius: var(--global-radius);
+                transition:
+                    box-shadow 0.2s,
+                    transform 0.1s; /* Added transition */
+
+                /* Classic 3D Shadow/Border */
+                border-style: solid;
+                border-width: 1px;
+                border-color: var(--border-light) var(--border-dark)
+                    var(--border-dark) var(--border-light);
+                box-shadow: 4px 4px 0 0 var(--border-dark); /* BOLD 4px shadow for buttons */
+            }
+
+            /* Secondary Button Style (for Postcard) */
+            .dashboard-button {
+                background-color: var(--surface1);
+                color: var(--text);
+                border-color: var(--border-light) var(--border-dark)
+                    var(--border-dark) var(--border-light);
+            }
+
+            /* Hover State - Slightly darker background, no lift, ADD GLOW */
+            .dashboard-button:hover {
+                background-color: var(--surface0);
+                transform: none;
+                box-shadow:
+                    4px 4px 0 0 var(--border-dark),
+                    0 0 12px var(--tertiary); /* Blue GLOW */
+            }
+            .scroll-button:hover,
+            .celebrate-button:hover {
+                background-color: #e09ba0; /* Darker pink */
+                transform: none;
+                box-shadow:
+                    4px 4px 0 0 var(--border-dark),
+                    0 0 12px var(--primary); /* Pink GLOW */
+            }
+
+            /* Pressed State - Insets the button, ADD INNER GLOW */
+            .scroll-button:active,
+            .celebrate-button:active,
+            .dashboard-button:active {
+                border-color: var(--border-dark) var(--border-light)
+                    var(--border-light) var(--border-dark);
+                box-shadow:
+                    inset 4px 4px 0 0 var(--border-dark),
+                    0 0 5px var(--primary); /* Inner Pink GLOW (default) */
+                transform: translate(
+                    4px,
+                    4px
+                ); /* Shift content down/right by 4px to simulate press */
+            }
+            .dashboard-button:active {
+                /* Override for dashboard button */
+                box-shadow:
+                    inset 4px 4px 0 0 var(--border-dark),
+                    0 0 5px var(--tertiary); /* Inner Blue GLOW */
+            }
+
+            /* --- Pop-up Modal (Retro Frame) --- */
+            .modal {
+                background-color: rgba(0, 0, 0, 0.8);
+                position: fixed;
+                z-index: 1000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                display: none;
+            }
+
+            .modal-content {
+                background-color: var(--surface0);
+                margin: 15% auto;
+                padding: 40px;
+                max-width: 450px;
+                text-align: center;
+                position: relative;
+                /* Inherits retro frame and BOLD 4px shadow from base style */
+            }
+
+            .close-btn {
+                color: var(--subtext0);
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                font-size: 24px;
+                font-weight: bold;
+            }
+
+            .close-btn:hover,
+            .close-btn:focus {
+                color: var(--primary);
+                text-decoration: none;
+            }
+
+            .postcard-icon {
+                font-size: 4em;
+                display: block;
+                margin-bottom: 20px;
+                color: var(--secondary);
+            }
+
+            .postcard-signature {
+                margin-top: 20px;
+                font-style: normal;
+            }
+
+            /* Confetti Container Positioning */
+            #confetti-container {
+                position: fixed;
+                top: 0;
+                left: var(--dashboard-width);
+                width: calc(100% - var(--dashboard-width));
+                height: 100%;
+                pointer-events: none;
+                overflow: hidden;
+                z-index: 1000;
+            }
+
+            /* Firework Particle CSS - for the confetti effect */
+            .firework-particle {
+                position: absolute;
+                animation-timing-function: ease-out;
+                opacity: 0.8;
+                z-index: 1001;
+            }
+
+            /* --- Responsive adjustments --- */
+            @media (max-width: 1000px) {
+                body {
+                    flex-direction: column;
+                }
+
+                .sweet-taskbar-dock {
+                    position: static;
+                    width: 100%;
+                    height: auto;
+                    flex-direction: row;
+                    flex-wrap: wrap;
+                    justify-content: space-around;
+                    padding: 15px;
+                    border-right: none;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                }
+
+                .taskbar-top-section {
+                    flex-direction: row;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                }
+
+                .sidebar-title,
+                .sidebar-subtitle {
+                    display: none;
+                }
+
+                /* Retro button style needs margin/sizing adjustment on mobile */
+                .sweet-item-icon-only {
+                    flex: 1 1 50px;
+                    padding: 10px;
+                    box-shadow: 2px 2px 0 0 var(--border-dark); /* Smaller shadow on mobile */
+                }
+                .sweet-item-icon-only:hover {
+                    box-shadow:
+                        2px 2px 0 0 var(--border-dark),
+                        0 0 5px var(--bday-gold); /* Smaller glow on mobile */
+                }
+                .sweet-item-icon-only:active {
+                    box-shadow:
+                        inset 2px 2px 0 0 var(--border-dark),
+                        0 0 5px var(--bday-gold);
+                    transform: translate(2px, 2px);
+                }
+
+                .dashboard-image-slot {
+                    height: 60px;
+                    flex: 1 1 60px;
+                    margin-bottom: 5px;
+                    box-shadow: 2px 2px 0 0 var(--border-dark); /* Smaller shadow on mobile */
+                }
+                #show-postcard-btn {
+                    flex: 1 1 auto;
+                    padding: 8px 15px;
+                }
+
+                .main-content-area {
+                    margin-left: 0;
+                    padding: 20px;
+                    position: static;
+                    height: auto;
+                    overflow: visible;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 20px;
+                }
+
+                /* On mobile, applets should stack normally and have full width */
+                .applet {
+                    position: static !important;
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    height: auto !important;
+                    margin: 0 !important;
+                    display: flex !important;
+                    /* Adjust shadow size for mobile */
+                    box-shadow: 2px 2px 0 0 var(--border-dark);
+                }
+                .applet.animate-in {
+                    animation: none;
+                }
+
+                .applet-launcher-btn.btn-style {
+                    width: 100%;
+                    box-shadow: 2px 2px 0 0 var(--border-dark);
+                }
+                .applet-launcher-btn.btn-style:hover {
+                    box-shadow:
+                        2px 2px 0 0 var(--border-dark),
+                        0 0 5px var(--primary);
+                }
+                .applet-launcher-btn.btn-style:active,
+                .applet-launcher-btn.applet-active {
+                    box-shadow:
+                        inset 2px 2px 0 0 var(--border-dark),
+                        0 0 5px var(--primary);
+                    transform: translate(2px, 2px);
+                }
+
+                #confetti-container {
+                    left: 0;
+                    width: 100%;
+                }
+
+                .admiration-points {
+                    grid-template-columns: 1fr;
+                }
+
+                /* Mobile adjustment for button press effect */
+                .scroll-button,
+                .celebrate-button,
+                .dashboard-button {
+                    box-shadow: 2px 2px 0 0 var(--border-dark); /* Smaller shadow on mobile */
+                }
+                .scroll-button:hover,
+                .celebrate-button:hover,
+                .dashboard-button:hover {
+                    box-shadow:
+                        2px 2px 0 0 var(--border-dark),
+                        0 0 5px var(--primary); /* Smaller glow on mobile */
+                }
+                .dashboard-button:hover {
+                    box-shadow:
+                        2px 2px 0 0 var(--border-dark),
+                        0 0 5px var(--tertiary);
+                }
+                .scroll-button:active,
+                .celebrate-button:active,
+                .dashboard-button:active {
+                    box-shadow:
+                        inset 2px 2px 0 0 var(--border-dark),
+                        0 0 5px var(--primary);
+                    transform: translate(2px, 2px);
+                }
+                .dashboard-button:active {
+                    box-shadow:
+                        inset 2px 2px 0 0 var(--border-dark),
+                        0 0 5px var(--tertiary);
+                }
+
+                .modal-content {
+                    box-shadow: 2px 2px 0 0 var(--border-dark); /* Smaller shadow on mobile */
+                }
+
+                /* Mobile adjustment for Hyprland effects */
+                .applet {
+                    box-shadow:
+                        2px 2px 0 0 var(--border-dark),
+                        0 0 0 1px var(--sidebar-bg),
+                        0 0 0 3px var(--tertiary);
+                }
+                .applet.is-dragging {
+                    box-shadow:
+                        2px 2px 0 0 var(--border-dark),
+                        0 0 0 2px var(--sidebar-bg),
+                        0 0 0 4px var(--primary),
+                        0 0 10px 4px rgba(245, 189, 192, 0.6);
+                }
+            }
+
+            /* Disable bouncy animation since it doesn't fit the OS aesthetic */
+            .applet.animate-in,
+            .applet.animate-out {
+                animation: none !important;
+            }
+
+            /* --- NEW: Hyprland-Style Window Effects --- */
+
+            /* 1. Base Applet Transition & Outline (Overriding base retro styles) */
+            .applet {
+                /* Overrides transition: none; to allow for smooth transform/shadow effects */
+                transition:
+                    transform 0.1s ease-out,
+                    box-shadow 0.2s ease-out;
+                /* Base colorful outline (Blue tertiary) on top of the retro shadow */
+                box-shadow:
+                    4px 4px 0 0 var(--border-dark),
+                    /* Existing Bold Drop Shadow */ 0 0 0 2px var(--sidebar-bg),
+                    /* Small gap layer (Darker background color) */ 0 0 0 5px
+                        var(--tertiary); /* Base colorful outline (Blue) */
+            }
+
+            /* 2. Dragging/Active State Effect (Hyprland Active Border/Glow) */
+            .applet.is-dragging {
+                /* Layered, colorful shadow for active/drag state */
+                box-shadow:
+                    4px 4px 0 0 var(--border-dark),
+                    /* Keep existing drop shadow */ 0 0 0 3px var(--sidebar-bg),
+                    /* Small gap layer */ 0 0 0 7px var(--primary),
+                    /* Primary color outline (Pink) */ 0 0 20px 8px
+                        rgba(245, 189, 192, 0.6); /* Soft outer glow */
+                transform: scale(1.005); /* Subtle lift when dragged */
+                /* Remove transition on positioning properties while dragging for snappier movement */
+                transition:
+                    box-shadow 0.1s ease-out,
+                    transform 0.1s ease-out;
+            }
+
+            /* Ensure elements sharing the base style retain the original simple shadow/no transition if needed */
+            .modal-content,
+            .window-frame,
+            .dashboard-image-slot,
+            .point,
+            .sweet-item-icon-only {
+                /* Re-apply original box-shadow without the new outline layers */
+                box-shadow: 4px 4px 0 0 var(--border-dark);
+                /* Explicitly keeping transition: none; for these elements that inherited it */
+                transition: none;
+            }
+
+            /* --- NEW: Boot Animation Styles (DOS/BIOS Style) --- */
+            #boot-screen {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: black;
+                color: #00ff00; /* Classic green terminal text */
+                font-family: var(--font-mono); /* Use retro monospace font */
+                font-size: 1.2em;
+                padding: 20px;
+                z-index: 2000;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                line-height: 1.5;
+                overflow: hidden;
+            }
+
+            .boot-line {
+                white-space: pre-wrap;
+                overflow: hidden;
+                width: 0; /* Starts hidden */
+                animation: type-in 0s steps(40, end) forwards;
+                color: var(--subtext0);
+            }
+
+            .boot-line.highlight {
+                color: var(--primary); /* Highlight for messages */
+                font-weight: 600;
+            }
+
+            /* Animation for typing effect */
+            @keyframes type-in {
+                from {
+                    width: 0;
+                }
+                to {
+                    width: 100%;
+                }
+            }
+
+            /* Blinking cursor effect for the last line */
+            .typing-cursor::after {
+                content: "_";
+                animation: blink 1s step-end infinite;
+            }
+
+            @keyframes blink {
+                from,
+                to {
+                    visibility: hidden;
+                }
+                50% {
+                    visibility: visible;
+                }
+            }
+
+            /* Fade out the whole boot screen */
+            #boot-screen.fade-out {
+                opacity: 0;
+                transition: opacity 1s ease-out;
+                pointer-events: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="boot-screen"></div>
+
+        <div id="confetti-container"></div>
+
+        <nav class="sweet-taskbar-dock">
+            <div class="taskbar-top-section">
+                <div class="sidebar-text-container">
+                    <h1 class="sidebar-title">Happy Birthday</h1>
+                    <p class="sidebar-subtitle">To You</p>
+                    <h1 class="sidebar-title" style="color: var(--secondary)">
+                        Message to you
+                    </h1>
+                    <p
+                        class="sidebar-subtitle"
+                        style="font-size: 0.9em; margin-top: 10px"
+                    >
+                        May your day be full of laughs, cake, and that weird
+                        butterfly feeling—if you know, you know. A flower for
+                        you Down there.
+                    </p>
+                </div>
+
+                <div class="dashboard-image-slot">
+                    <span class="icon-placeholder">
+                        <img
+                            src="https://w.wallhaven.cc/full/yj/wallhaven-yjqg9x.jpg"
+                            alt="Shrutika's Photo"
+                            class="main-display-photo"
+                    /></span>
+                </div>
+
+                <div
+                    id="utility-cake"
+                    class="sweet-item-icon-only"
+                    title="A break from the routine"
+                    onclick="showUtilityMessage('cake')"
+                >
+                    <span class="icon">🍩</span>
+                </div>
+
+                <div
+                    id="utility-sparkles"
+                    class="sweet-item-icon-only"
+                    title="Less frustrated emails"
+                    onclick="showUtilityMessage('sparkles')"
+                >
+                    <span class="icon">⭐</span>
+                </div>
+
+                <div
+                    id="utility-heart"
+                    class="sweet-item-icon-only"
+                    title="Spontaneous smiling warning"
+                    onclick="showUtilityMessage('heart')"
+                >
+                    <span class="icon">♥</span>
+                </div>
+            </div>
+
+            <button id="show-postcard-btn" class="dashboard-button">
+                ✉️ Postcard
+            </button>
+
+            <div class="applet-launch-bar dock-style button-dock">
+                <button
+                    class="applet-launcher-btn btn-style btn-message"
+                    data-target="main-message-applet"
+                    onclick="toggleApplet('main-message-applet')"
+                    title="Main Message"
+                >
+                    Message
+                </button>
+
+                <button
+                    class="applet-launcher-btn btn-style btn-cake"
+                    data-target="cake-applet"
+                    onclick="toggleApplet('cake-applet')"
+                    title="Birthday Cake"
+                >
+                    Cake
+                </button>
+
+                <button
+                    class="applet-launcher-btn btn-style btn-points"
+                    data-target="admiration-applet"
+                    onclick="toggleApplet('admiration-applet')"
+                    title="Admiration Points"
+                >
+                    Points
+                </button>
+
+                <button
+                    class="applet-launcher-btn btn-style btn-gallery"
+                    data-target="gallery-applet"
+                    onclick="toggleApplet('gallery-applet')"
+                    title="Photo Viewer"
+                >
+                    Gallery
+                </button>
+
+                <button
+                    class="applet-launcher-btn btn-style btn-final"
+                    data-target="closing-applet"
+                    onclick="toggleApplet('closing-applet')"
+                    title="Final Note"
+                >
+                    Final
+                </button>
+            </div>
+        </nav>
+
+        <div class="main-content-area applet-desktop">
+            <div
+                id="main-message-applet"
+                class="applet large-applet"
+                style="display: none"
+            >
+                <div class="window-title-bar">
+                    Happy Birthday, Shrutika! 🎂
+                    <span
+                        class="window-close-btn"
+                        onclick="toggleApplet('main-message-applet')"
+                        >X</span
+                    >
+                </div>
+                <div class="applet-content">
+                    <header class="hero-section">
+                        <h1 class="main-title">Happy Birthday, Shrutika!</h1>
+                        <p class="subtitle">
+                            A special space for a very special person.
+                        </p>
+                    </header>
+                    <p style="margin-top: 25px; color: var(--subtext0)">
+                        Welcome to your personalized celebration space! Use the
+                        buttons in the left sidebar to open different notes and
+                        moments. They are draggable, so feel free to move them
+                        around the desktop.
+                    </p>
+                </div>
+            </div>
+
+            <div
+                id="cake-applet"
+                class="applet cake-applet"
+                style="display: none"
+            >
+                <div class="window-title-bar">
+                    Happy Birthday Cake 🍰
+                    <span
+                        class="window-close-btn"
+                        onclick="toggleApplet('cake-applet')"
+                        >X</span
+                    >
+                </div>
+                <div class="applet-content">
+                    <div class="cake-display">
+                        <svg
+                            class="cake-svg"
+                            viewBox="0 0 100 100"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M 10 50 L 90 50 C 90 60, 10 60, 10 50 Z"
+                                fill="var(--surface1)"
+                            />
+                            <rect
+                                x="20"
+                                y="50"
+                                width="60"
+                                height="20"
+                                rx="5"
+                                class="cake-layer-color-1"
+                            />
+                            <rect
+                                x="25"
+                                y="40"
+                                width="50"
+                                height="10"
+                                rx="3"
+                                class="cake-icing"
+                            />
+                            <rect
+                                x="30"
+                                y="30"
+                                width="40"
+                                height="10"
+                                rx="2"
+                                class="cake-layer-color-2"
+                            />
+                            <path
+                                d="M 30 30 C 35 25, 65 25, 70 30 L 70 30"
+                                class="cake-icing"
+                            />
+                            <rect
+                                x="48"
+                                y="15"
+                                width="4"
+                                height="15"
+                                fill="#ff7f50"
+                            />
+                            <path
+                                class="candle-flame"
+                                d="M 50 15 C 51 10, 49 10, 50 15 Z"
+                            />
+                        </svg>
+                        <p style="color: var(--subtext0)">
+                            Yo text chai tya vitra hunu parthiyo tara UI gardine
+                            koi xaina so UI gardine koi missing thiyo *Wink
+                            Wink*
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                id="admiration-applet"
+                class="applet medium-applet"
+                style="display: none"
+            >
+                <div class="window-title-bar">
+                    What I Admire Most 💖
+                    <span
+                        class="window-close-btn"
+                        onclick="toggleApplet('admiration-applet')"
+                        >X</span
+                    >
+                </div>
+                <div class="applet-content">
+                    <div class="admiration-points">
+                        <div class="point">
+                            <span class="icon" style="color: var(--primary)"
+                                >😄</span
+                            >
+                            <h3>Nothing to See here</h3>
+                            <p>
+                                If I start listing it all we'd run into storage
+                                issues. Or you'd be reading a thesis paper.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                id="gallery-applet"
+                class="applet photo-viewer-applet"
+                style="display: none"
+            >
+                <div class="window-title-bar">
+                    Shrutika's Gallery 📸
+                    <span
+                        class="window-close-btn"
+                        onclick="toggleApplet('gallery-applet')"
+                        >X</span
+                    >
+                </div>
+                <div class="applet-content">
+                    <div class="single-photo-viewer">
+                        <img
+                            src="https://w.wallhaven.cc/full/nz/wallhaven-nz62kv.jpg"
+                            alt="Shrutika's Photo"
+                            class="main-display-photo"
+                        />
+                        <p class="photo-caption">
+                            Timro Photo Hunu parne tara I don't have any TT. So
+                            something as prtty as you.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                id="closing-applet"
+                class="applet large-applet"
+                style="display: none"
+            >
+                <div class="window-title-bar">
+                    Sending Love Hehe🎉
+                    <span
+                        class="window-close-btn"
+                        onclick="toggleApplet('closing-applet')"
+                        >X</span
+                    >
+                </div>
+                <div class="applet-content final-applet-content">
+                    <div
+                        style="
+                            margin-bottom: 25px;
+                            border: 1px dashed var(--surface1);
+                            padding: 25px;
+                            border-radius: var(--global-radius);
+                        "
+                    >
+                        <p class="final-message">
+                            Wishing you a year full of awesome stories and maybe
+                            just a little bit of trouble for me to solve ofc.
+                        </p>
+                        <p class="signature">— Me</p>
+                    </div>
+                    <button id="celebrate-btn" class="celebrate-button">
+                        Click for a Surprise!
+                    </button>
+
+                    <div
+                        style="
+                            margin-top: 20px;
+                            display: flex;
+                            justify-content: center;
+                        "
+                    >
+                        <svg
+                            width="150"
+                            height="150"
+                            viewBox="0 0 100 100"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <circle
+                                cx="50"
+                                cy="50"
+                                r="10"
+                                fill="var(--primary)"
+                            />
+                            <line
+                                x1="50"
+                                y1="50"
+                                x2="90"
+                                y2="10"
+                                stroke="var(--primary)"
+                                stroke-width="3"
+                                stroke-linecap="round"
+                            />
+                            <line
+                                x1="50"
+                                y1="50"
+                                x2="10"
+                                y2="10"
+                                stroke="var(--primary)"
+                                stroke-width="3"
+                                stroke-linecap="round"
+                            />
+                            <line
+                                x1="50"
+                                y1="50"
+                                x2="50"
+                                y2="10"
+                                stroke="var(--primary)"
+                                stroke-width="3"
+                                stroke-linecap="round"
+                            />
+                            <line
+                                x1="50"
+                                y1="50"
+                                x2="10"
+                                y2="90"
+                                stroke="var(--secondary)"
+                                stroke-width="3"
+                                stroke-linecap="round"
+                            />
+                            <line
+                                x1="50"
+                                y1="50"
+                                x2="90"
+                                y2="90"
+                                stroke="var(--secondary)"
+                                stroke-width="3"
+                                stroke-linecap="round"
+                            />
+                            <line
+                                x1="50"
+                                y1="50"
+                                x2="90"
+                                y2="50"
+                                stroke="var(--secondary)"
+                                stroke-width="3"
+                                stroke-linecap="round"
+                            />
+                            <line
+                                x1="50"
+                                y1="50"
+                                x2="10"
+                                y2="50"
+                                stroke="var(--secondary)"
+                                stroke-width="3"
+                                stroke-linecap="round"
+                            />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="postcard-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <div class="postcard-body">
+                    <span id="modal-icon" class="postcard-icon">💌</span>
+                    <h3 id="modal-title">To My Dearest Shrutika,</h3>
+                    <p id="modal-message">
+                        Happy Birthday! I hope your celebrations are epic and
+                        involve zero waiting in line. You deserve the VIP
+                        treatment. This little space is just a reminder of how
+                        awesome you are.
+                    </p>
+                    <p id="modal-signature" class="postcard-signature">
+                        — Wishing you the happiest day, Me Hehe
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                // --- BOOT ANIMATION IMPLEMENTATION (NEW SECTION) ---
+
+                const BOOT_MESSAGES = [
+                    "BIOS Check: Shrutika-OS v1.0 Booting...",
+                    "Memory: 1024MB (Admiration_Core) OK",
+                    "HDD: /dev/hda1 (Love_Storage) OK",
+                    "Network: Connecting to Heartbeat Protocol... Connected.",
+                    "System check: Happiness_Module loaded.",
+                    "System check: Smile_Detector active.",
+                    "System check: Birthday_Surprise_Agent running...",
+                    "Critical Alert: Birthday Wishes: ",
+                    "Happy Birthday, Shrutika! Wishing you an amazing day!",
+                    "Initiating Desktop Environment...",
+                ];
+                const bootScreen = document.getElementById("boot-screen");
+
+                function startBootSequence() {
+                    let delay = 500; // Initial delay before first line
+                    let totalDelay = delay;
+
+                    BOOT_MESSAGES.forEach((message, index) => {
+                        const line = document.createElement("div");
+                        line.classList.add("boot-line");
+                        line.textContent = message;
+
+                        // Highlight the custom message
+                        if (index === 8) {
+                            line.classList.add("highlight");
+                        }
+
+                        bootScreen.appendChild(line);
+
+                        const messageLength = message.length;
+                        // Typing speed: 40ms per character
+                        const typingDuration = messageLength * 40;
+
+                        // Set the typing animation duration dynamically
+                        line.style.animationDuration = `${typingDuration}ms`;
+
+                        setTimeout(() => {
+                            // Add cursor to the last line being 'typed'
+                            if (index < BOOT_MESSAGES.length - 1) {
+                                line.classList.add("typing-cursor");
+                            }
+                        }, totalDelay);
+
+                        // Remove the cursor after typing is complete
+                        totalDelay += typingDuration;
+                        setTimeout(() => {
+                            line.classList.remove("typing-cursor");
+                        }, totalDelay);
+
+                        // Add a pause before the next line starts
+                        const pause = 500;
+                        totalDelay += pause;
+                    });
+
+                    // Wait for all lines + final pause, then fade out
+                    setTimeout(() => {
+                        bootScreen.classList.add("fade-out");
+
+                        // After fade out, remove the element and proceed with the rest of the page load
+                        setTimeout(() => {
+                            bootScreen.remove();
+                            // Continue with the rest of the document load logic
+                            initializePageContent();
+                        }, 1000); // 1s for the CSS fade-out transition
+                    }, totalDelay + 1500); // Extra pause before fade-out
+                }
+
+                function initializePageContent() {
+                    // This function contains all the original DOMContentLoaded logic
+
+                    // --- 0. Drag and Drop Functionality ---
+                    function makeDraggable(element) {
+                        const titleBar =
+                            element.querySelector(".window-title-bar");
+
+                        if (!titleBar) return;
+
+                        let pos1 = 0,
+                            pos2 = 0,
+                            pos3 = 0,
+                            pos4 = 0;
+
+                        element.style.position = "absolute";
+
+                        titleBar.onmousedown = dragMouseDown;
+                        titleBar.ontouchstart = dragMouseDown;
+
+                        function dragMouseDown(e) {
+                            e = e || window.event;
+                            e.preventDefault();
+
+                            const clientX =
+                                e.clientX ||
+                                (e.touches ? e.touches[0].clientX : 0);
+                            const clientY =
+                                e.clientY ||
+                                (e.touches ? e.touches[0].clientY : 0);
+
+                            pos3 = clientX;
+                            pos4 = clientY;
+
+                            document.onmouseup = closeDragElement;
+                            document.onmousemove = elementDrag;
+
+                            document.ontouchend = closeDragElement;
+                            document.ontouchmove = elementDrag;
+
+                            element.style.zIndex = 100;
+                            // NEW: Add dragging class for visual effect
+                            element.classList.add("is-dragging");
+                        }
+
+                        function elementDrag(e) {
+                            e = e || window.event;
+                            e.preventDefault();
+
+                            const clientX =
+                                e.clientX ||
+                                (e.touches ? e.touches[0].clientX : 0);
+                            const clientY =
+                                e.clientY ||
+                                (e.touches ? e.touches[0].clientY : 0);
+
+                            pos1 = pos3 - clientX;
+                            pos2 = pos4 - clientY;
+                            pos3 = clientX;
+                            pos4 = clientY;
+
+                            element.style.top = element.offsetTop - pos2 + "px";
+                            element.style.left =
+                                element.offsetLeft - pos1 + "px";
+                        }
+
+                        function closeDragElement() {
+                            document.onmouseup = null;
+                            document.onmousemove = null;
+                            document.ontouchend = null;
+                            document.ontouchmove = null;
+
+                            element.style.zIndex = 90;
+                            // NEW: Remove dragging class
+                            element.classList.remove("is-dragging");
+                        }
+                    }
+
+                    // Initialize drag functionality on all applets
+                    document.querySelectorAll(".applet").forEach((applet) => {
+                        makeDraggable(applet);
+                    });
+
+                    // --- 1. Applet Open/Close Functionality ---
+                    window.toggleApplet = function (appletId) {
+                        const applet = document.getElementById(appletId);
+                        const launcher = document.querySelector(
+                            `.applet-launcher-btn[data-target="${appletId}"]`,
+                        );
+
+                        const isMobile = window.matchMedia(
+                            "(max-width: 1000px)",
+                        ).matches;
+
+                        if (
+                            applet.style.display === "none" ||
+                            applet.style.display === ""
+                        ) {
+                            // --- OPEN APPLET ---
+                            applet.style.display = "block";
+                            launcher.classList.add("applet-active");
+
+                            // Set initial position if not dragged yet (only for desktop/draggable mode)
+                            if (
+                                !isMobile &&
+                                (applet.style.left === "" ||
+                                    applet.style.top === "0px" ||
+                                    applet.style.top === "")
+                            ) {
+                                const offset =
+                                    Math.floor(Math.random() * 50) + 10;
+                                applet.style.top = `${offset}px`;
+                                applet.style.left = `${offset}px`;
+                            }
+
+                            applet.style.zIndex = 99;
+                        } else {
+                            // --- CLOSE APPLET ---
+                            applet.style.display = "none";
+                            launcher.classList.remove("applet-active");
+                        }
+                    };
+
+                    // Set initial state for all applets to hidden and absolute
+                    document.querySelectorAll(".applet").forEach((applet) => {
+                        applet.style.display = "none";
+                        applet.style.position = "absolute";
+                        applet.style.zIndex = 90;
+                    });
+
+                    // --- 2. Pop-up Modal Functionality (Postcard & Utility Buttons) ---
+                    const modal = document.getElementById("postcard-modal");
+                    const showPostcardBtn =
+                        document.getElementById("show-postcard-btn");
+                    const closeBtn =
+                        document.getElementsByClassName("close-btn")[0];
+
+                    // --- Store Original Postcard Content ---
+                    const ORIGINAL_POSTCARD = {
+                        icon: "💌",
+                        title: "To My Dearest Shrutika,",
+                        message:
+                            "Happy Birthday! I hope your celebrations are epic and involve zero waiting in line. You deserve the VIP treatment. This little space is just a reminder of how awesome you are.",
+                        signature: "— Wishing you the happiest day, Me Hehe",
+                    };
+
+                    // --- Utility Messages Data ---
+                    const UTILITY_MESSAGES = {
+                        cake: {
+                            icon: "🍩", // Changed from 🍰
+                            title: "Cake Break Reminder",
+                            message:
+                                "You are hereby ordered to take a 15-minute break. This is a non-negotiable, cake-required decree.",
+                            signature: "— System Administrator",
+                        },
+                        sparkles: {
+                            icon: "⭐", // Changed from ✨
+                            title: "Emergency Sparkle Protocol",
+                            message:
+                                "The system detects an insufficient level of spontaneous joy. Deploying extra sparkle immediately.",
+                            signature: "— Joy Coordinator",
+                        },
+                        heart: {
+                            icon: "♥", // Changed from 💖
+                            title: "Mandatory Self-Admiration",
+                            message:
+                                "Congrats on another year of being criminally adorable. It should honestly be illegal",
+                            signature: "— Your Fan Club",
+                        },
+                    };
+
+                    // --- Utility function to populate and show modal ---
+                    window.showUtilityMessage = function (type) {
+                        const data = UTILITY_MESSAGES[type];
+                        if (!data) return;
+
+                        document.getElementById("modal-icon").textContent =
+                            data.icon;
+                        document.getElementById("modal-title").textContent =
+                            data.title;
+                        document.getElementById("modal-message").textContent =
+                            data.message;
+                        document.getElementById("modal-signature").textContent =
+                            data.signature;
+
+                        modal.style.display = "block";
+                    };
+
+                    if (showPostcardBtn && modal) {
+                        showPostcardBtn.addEventListener("click", () => {
+                            // Load original postcard content before showing
+                            document.getElementById("modal-icon").textContent =
+                                ORIGINAL_POSTCARD.icon;
+                            document.getElementById("modal-title").textContent =
+                                ORIGINAL_POSTCARD.title;
+                            document.getElementById(
+                                "modal-message",
+                            ).textContent = ORIGINAL_POSTCARD.message;
+                            document.getElementById(
+                                "modal-signature",
+                            ).textContent = ORIGINAL_POSTCARD.signature;
+
+                            modal.style.display = "block";
+                        });
+                    }
+
+                    if (closeBtn && modal) {
+                        closeBtn.addEventListener("click", () => {
+                            modal.style.display = "none";
+                        });
+                    }
+
+                    window.addEventListener("click", (event) => {
+                        if (event.target === modal) {
+                            modal.style.display = "none";
+                        }
+                    });
+
+                    // --- 3. Firework Explosion Effect (Kept soft style for confetti) ---
+                    const celebrateBtn =
+                        document.getElementById("celebrate-btn");
+                    const confettiContainer =
+                        document.getElementById("confetti-container");
+                    const FIREWORK_COLORS = [
+                        "var(--primary)",
+                        "var(--tertiary)",
+                        "var(--secondary)",
+                        "var(--text)",
+                        "#ff006e",
+                        "#8338ec",
+                    ];
+
+                    function createFirework(centerX, centerY) {
+                        const pieces = 50;
+                        const maxRadius = 200;
+
+                        for (let i = 0; i < pieces; i++) {
+                            const firework = document.createElement("div");
+                            firework.classList.add("firework-particle");
+
+                            const angle = (i / pieces) * Math.PI * 2;
+                            const radius =
+                                Math.random() *
+                                maxRadius *
+                                (Math.random() > 0.5 ? 1 : 0.8);
+
+                            const targetX = centerX + radius * Math.cos(angle);
+                            const targetY = centerY - radius * Math.sin(angle);
+
+                            firework.style.backgroundColor =
+                                FIREWORK_COLORS[
+                                    Math.floor(
+                                        Math.random() * FIREWORK_COLORS.length,
+                                    )
+                                ];
+                            firework.style.left = centerX + "px";
+                            firework.style.top = centerY + "px";
+                            firework.style.borderRadius = "50%";
+
+                            const size = Math.random() * 6 + 2;
+                            firework.style.width = size + "px";
+                            firework.style.height = size + "px";
+
+                            const duration = 2.0 + Math.random() * 1.5;
+                            firework.style.animationDuration = duration + "s";
+                            firework.style.animationDelay = "0s";
+                            firework.style.opacity = 0;
+
+                            const keyframeName = `explode-${i}-${Date.now()}`;
+                            injectFireworkKeyframe(
+                                keyframeName,
+                                targetX,
+                                targetY,
+                            );
+                            firework.style.animationName = keyframeName;
+
+                            confettiContainer.appendChild(firework);
+
+                            setTimeout(
+                                () => {
+                                    firework.remove();
+                                },
+                                duration * 1000 + 100,
+                            );
+                        }
+                    }
+
+                    function injectFireworkKeyframe(name, targetX, targetY) {
+                        let styleSheet =
+                            document.getElementById("firework-styles");
+                        if (!styleSheet) {
+                            styleSheet = document.createElement("style");
+                            styleSheet.id = "firework-styles";
+                            document.head.appendChild(styleSheet);
+                        }
+
+                        const styleSheetObj = styleSheet.sheet;
+
+                        let existingRuleIndex = -1;
+                        for (
+                            let i = 0;
+                            i < styleSheetObj.cssRules.length;
+                            i++
+                        ) {
+                            if (styleSheetObj.cssRules[i].name === name) {
+                                existingRuleIndex = i;
+                                break;
+                            }
+                        }
+                        if (existingRuleIndex !== -1) {
+                            styleSheetObj.deleteRule(existingRuleIndex);
+                        }
+
+                        const keyframeRule = `
+            @keyframes ${name} {
+                0% { opacity: 1; transform: translate(0, 0); }
+                100% { opacity: 0; transform: translate(${targetX}px, ${targetY}px); }
+            }
+        `;
+
+                        try {
+                            styleSheetObj.insertRule(
+                                keyframeRule,
+                                styleSheetObj.cssRules.length,
+                            );
+                        } catch (e) {
+                            console.error("Could not insert keyframe rule:", e);
+                        }
+                    }
+
+                    function launchFireworks(event) {
+                        const rect = confettiContainer.getBoundingClientRect();
+                        const buttonRect = celebrateBtn.getBoundingClientRect();
+
+                        const explosionViewportX =
+                            buttonRect.left + buttonRect.width / 2;
+                        const explosionViewportY =
+                            buttonRect.top + buttonRect.height / 2;
+
+                        const centerX = explosionViewportX - rect.left;
+                        const centerY = explosionViewportY - rect.top;
+
+                        for (let i = 0; i < 5; i++) {
+                            const offsetX = Math.random() * 100 - 50;
+                            const offsetY = Math.random() * 100 - 50;
+                            createFirework(
+                                centerX + offsetX,
+                                centerY + offsetY,
+                            );
+                        }
+                    }
+
+                    if (celebrateBtn) {
+                        celebrateBtn.addEventListener("click", launchFireworks);
+                    }
+
+                    // --- 4. Confetti Trail on Mouse Move (UPDATED FOR VISIBILITY) ---
+                    const mainContentArea =
+                        document.querySelector(".main-content-area");
+                    let lastConfettiTime = 0;
+                    // Decreased interval for more density
+                    const confettiInterval = 30; // milliseconds
+
+                    function createSmallConfetti(x, y) {
+                        const confetti = document.createElement("div");
+                        confetti.classList.add("firework-particle");
+                        confetti.style.backgroundColor =
+                            FIREWORK_COLORS[
+                                Math.floor(
+                                    Math.random() * FIREWORK_COLORS.length,
+                                )
+                            ];
+                        confetti.style.left = x + "px";
+                        confetti.style.top = y + "px";
+                        confetti.style.borderRadius = "50%";
+                        // Increased size for visibility
+                        confetti.style.width = "8px";
+                        confetti.style.height = "8px";
+                        confetti.style.opacity = 1;
+
+                        // Simple fade and slight drift
+                        const duration = 1.5;
+                        confetti.style.animation = `trail-drift ${duration}s ease-out forwards`;
+
+                        confettiContainer.appendChild(confetti);
+
+                        setTimeout(() => confetti.remove(), duration * 1000);
+                    }
+
+                    mainContentArea.addEventListener("mousemove", (e) => {
+                        const now = Date.now();
+                        if (now - lastConfettiTime > confettiInterval) {
+                            lastConfettiTime = now;
+
+                            const rect =
+                                confettiContainer.getBoundingClientRect();
+                            const x = e.clientX - rect.left;
+                            const y = e.clientY - rect.top;
+
+                            createSmallConfetti(x, y);
+                        }
+                    });
+
+                    // Inject Keyframes for mouse-move confetti trail
+                    function injectTrailKeyframe() {
+                        let styleSheet =
+                            document.getElementById("firework-styles");
+                        const styleSheetObj = styleSheet.sheet;
+
+                        // Increased drift distance from -10px to -20px
+                        const keyframeRule = `
+            @keyframes trail-drift {
+                0% { opacity: 1; transform: translate(0, 0); }
+                100% { opacity: 0; transform: translate(0, -20px); }
+            }
+        `;
+
+                        let existingRuleIndex = -1;
+                        for (
+                            let i = 0;
+                            i < styleSheetObj.cssRules.length;
+                            i++
+                        ) {
+                            // Check if the rule is already injected to avoid duplicates
+                            if (
+                                styleSheetObj.cssRules[i].type ===
+                                    CSSRule.KEYFRAMES_RULE &&
+                                styleSheetObj.cssRules[i].name === "trail-drift"
+                            ) {
+                                styleSheetObj.deleteRule(i);
+                                break;
+                            }
+                        }
+
+                        try {
+                            styleSheetObj.insertRule(
+                                keyframeRule,
+                                styleSheetObj.cssRules.length,
+                            );
+                        } catch (e) {
+                            console.error(
+                                "Could not insert trail keyframe rule:",
+                                e,
+                            );
+                        }
+                    }
+
+                    // Add base CSS for fireworks
+                    const baseStyle = document.createElement("style");
+                    baseStyle.id = "firework-styles";
+                    baseStyle.innerHTML = `
+        .firework-particle {
+            position: absolute;
+            animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            opacity: 0.8;
+            z-index: 1001;
+        }
+    `;
+                    document.head.appendChild(baseStyle);
+                    injectTrailKeyframe();
+
+                    // Auto-open the main message applet on load
+                    toggleApplet("main-message-applet");
+                }
+
+                // Start the boot sequence instead of immediately loading the page content
+                startBootSequence();
+            });
+        </script>
+    </body>
+</html>
