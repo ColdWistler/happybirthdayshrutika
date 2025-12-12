@@ -803,12 +803,71 @@
                 .modal-content {
                     box-shadow: 2px 2px 0 0 var(--border-dark); /* Smaller shadow on mobile */
                 }
+
+                /* Mobile adjustment for Hyprland effects */
+                .applet {
+                    box-shadow:
+                        2px 2px 0 0 var(--border-dark),
+                        0 0 0 1px var(--sidebar-bg),
+                        0 0 0 3px var(--tertiary);
+                }
+                .applet.is-dragging {
+                    box-shadow:
+                        2px 2px 0 0 var(--border-dark),
+                        0 0 0 2px var(--sidebar-bg),
+                        0 0 0 4px var(--primary),
+                        0 0 10px 4px rgba(245, 189, 192, 0.6);
+                }
             }
 
             /* Disable bouncy animation since it doesn't fit the OS aesthetic */
             .applet.animate-in,
             .applet.animate-out {
                 animation: none !important;
+            }
+
+            /* --- NEW: Hyprland-Style Window Effects --- */
+
+            /* 1. Base Applet Transition & Outline (Overriding base retro styles) */
+            .applet {
+                /* Overrides transition: none; to allow for smooth transform/shadow effects */
+                transition:
+                    transform 0.1s ease-out,
+                    box-shadow 0.2s ease-out;
+                /* Base colorful outline (Blue tertiary) on top of the retro shadow */
+                box-shadow:
+                    4px 4px 0 0 var(--border-dark),
+                    /* Existing Bold Drop Shadow */ 0 0 0 2px var(--sidebar-bg),
+                    /* Small gap layer (Darker background color) */ 0 0 0 5px
+                        var(--tertiary); /* Base colorful outline (Blue) */
+            }
+
+            /* 2. Dragging/Active State Effect (Hyprland Active Border/Glow) */
+            .applet.is-dragging {
+                /* Layered, colorful shadow for active/drag state */
+                box-shadow:
+                    4px 4px 0 0 var(--border-dark),
+                    /* Keep existing drop shadow */ 0 0 0 3px var(--sidebar-bg),
+                    /* Small gap layer */ 0 0 0 7px var(--primary),
+                    /* Primary color outline (Pink) */ 0 0 20px 8px
+                        rgba(245, 189, 192, 0.6); /* Soft outer glow */
+                transform: scale(1.005); /* Subtle lift when dragged */
+                /* Remove transition on positioning properties while dragging for snappier movement */
+                transition:
+                    box-shadow 0.1s ease-out,
+                    transform 0.1s ease-out;
+            }
+
+            /* Ensure elements sharing the base style retain the original simple shadow/no transition if needed */
+            .modal-content,
+            .window-frame,
+            .dashboard-image-slot,
+            .point,
+            .sweet-item-icon-only {
+                /* Re-apply original box-shadow without the new outline layers */
+                box-shadow: 4px 4px 0 0 var(--border-dark);
+                /* Explicitly keeping transition: none; for these elements that inherited it */
+                transition: none;
             }
         </style>
     </head>
@@ -828,7 +887,8 @@
                         style="font-size: 0.9em; margin-top: 10px"
                     >
                         May your day be full of laughs, cake, and that weird
-                        butterfly feeling—if you know, you know.
+                        butterfly feeling—if you know, you know. A flower for
+                        you Down there.
                     </p>
                 </div>
 
@@ -1016,8 +1076,9 @@
                             />
                         </svg>
                         <p style="color: var(--subtext0)">
-                            May your day be filled with sweet surprises and
-                            happy moments!
+                            Yo text chai tya vitra hunu parthiyo tara UI gardine
+                            koi xaina so UI gardine koi missing thiyo *Wink
+                            Wink*
                         </p>
                     </div>
                 </div>
@@ -1042,44 +1103,10 @@
                             <span class="icon" style="color: var(--primary)"
                                 >😄</span
                             >
-                            <h3>Your Sense of Humor</h3>
+                            <h3>Nothing to See here</h3>
                             <p>
-                                If you ever started a podcast, I'd listen—even
-                                if it was just 3 hours of you explaining traffic
-                                laws. 😉
-                            </p>
-                        </div>
-                        <div class="point">
-                            <span class="icon" style="color: var(--secondary)"
-                                >💡</span
-                            >
-                            <h3>Your Focus</h3>
-                            <p>
-                                You have a way of looking at a problem that
-                                makes everyone else wonder why they didn't think
-                                of it. It's almost annoying. 😉
-                            </p>
-                        </div>
-                        <div class="point">
-                            <span class="icon" style="color: var(--primary)"
-                                >💐</span
-                            >
-                            <h3>Your Presence</h3>
-                            <p>
-                                You're the reason the weekend starts on Friday
-                                afternoon. Everything just gets better when
-                                you're around.
-                            </p>
-                        </div>
-                        <div class="point">
-                            <span class="icon" style="color: var(--secondary)"
-                                >🧠</span
-                            >
-                            <h3>Your Clarity</h3>
-                            <p>
-                                You can untangle complexity faster than anyone.
-                                This applet is complex, and yet, you immediately
-                                get it. Cheers!
+                                If I start listing it all we'd run into storage
+                                issues. Or you'd be reading a thesis paper.
                             </p>
                         </div>
                     </div>
@@ -1107,8 +1134,8 @@
                             class="main-display-photo"
                         />
                         <p class="photo-caption">
-                            Double-click on the image to edit the file and paste
-                            your photo URL!
+                            Timro Photo Hunu parne tara I don't have any TT. So
+                            something as prtty as you.
                         </p>
                     </div>
                 </div>
@@ -1120,7 +1147,7 @@
                 style="display: none"
             >
                 <div class="window-title-bar">
-                    Sending Love 🎉
+                    Sending Love Hehe🎉
                     <span
                         class="window-close-btn"
                         onclick="toggleApplet('closing-applet')"
@@ -1138,9 +1165,9 @@
                     >
                         <p class="final-message">
                             Wishing you a year full of awesome stories and maybe
-                            just a little bit of trouble. Go make some memories!
+                            just a little bit of trouble for me to solve ofc.
                         </p>
-                        <p class="signature">— [Your Name or initial]</p>
+                        <p class="signature">— Me</p>
                     </div>
                     <button id="celebrate-btn" class="celebrate-button">
                         Click for a Surprise!
@@ -1248,7 +1275,7 @@
                         awesome you are.
                     </p>
                     <p id="modal-signature" class="postcard-signature">
-                        — Wishing you the happiest day, [Your Name]
+                        — Wishing you the happiest day, Me Hehe
                     </p>
                 </div>
             </div>
@@ -1292,6 +1319,8 @@
                         document.ontouchmove = elementDrag;
 
                         element.style.zIndex = 100;
+                        // NEW: Add dragging class for visual effect
+                        element.classList.add("is-dragging");
                     }
 
                     function elementDrag(e) {
@@ -1319,6 +1348,8 @@
                         document.ontouchmove = null;
 
                         element.style.zIndex = 90;
+                        // NEW: Remove dragging class
+                        element.classList.remove("is-dragging");
                     }
                 }
 
@@ -1386,7 +1417,7 @@
                     title: "To My Dearest Shrutika,",
                     message:
                         "Happy Birthday! I hope your celebrations are epic and involve zero waiting in line. You deserve the VIP treatment. This little space is just a reminder of how awesome you are.",
-                    signature: "— Wishing you the happiest day, [Your Name]",
+                    signature: "— Wishing you the happiest day, Me Hehe",
                 };
 
                 // --- Utility Messages Data ---
